@@ -12,11 +12,15 @@ public class PlayerController : MonoBehaviour
     private Rigidbody rb;
     private bool isJumping1;
     private bool isJumping2;
-
-    void Start()
+    private void Start()
     {
+        StartCoroutine(SpawnWait());
     }
 
+    IEnumerator SpawnWait()
+    {
+        yield return new WaitForSeconds(1);
+    }
     void FixedUpdate()
     {
         //Start Player1 Movement

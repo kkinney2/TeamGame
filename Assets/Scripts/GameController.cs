@@ -8,12 +8,15 @@ public class GameController : MonoBehaviour
 {
 
     public GameObject[] levels;
+    public GameObject[] players;
+    public GameObject[] playerSpawns;
+    public GameObject[] destroyObjects;
     public Vector3 levelSpawnValues;
     public int levelCount;
     public float levelSpawnWait;
     public float startWait;
     public float waveWait;
-    public int numRounds = 1;
+    public int maxRounds = 1;
     public Text scoreText1;
     public Text scoreText2;
     public Text restartText;
@@ -54,11 +57,28 @@ public class GameController : MonoBehaviour
         yield return new WaitForSeconds(startWait);
         while (true)
         {
-            for (int rounds = 0; rounds < numRounds; rounds++)
+            for (int rounds = 0; rounds < maxRounds; rounds++)
             {
-                if (Input.GetKeyDown(KeyCode.Escape))
+                roundOver = false;
+
+                GameObject level = levels[Random.Range(0, levels.Length)];
+                Quaternion spawnRotation = Quaternion.identity;
+                Instantiate(level, levelSpawnValues, spawnRotation);
+                //for (int i = 0; i< players.Length; i++)
+                //{
+                //    GameObject player = players[i];
+                //    GameObject playerSpawn = playerSpawns[i];
+                //    Vector3 playerSpawnValue = playerSpawn.transform.position;
+                //    Instantiate(player, playerSpawnValue, spawnRotation);
+                //}
+                yield return new WaitForSeconds(3);
+                for(int i =0; i < destroyObjects.Length; i++)
                 {
-                    break;
+                    Destroy(destroyObjects[i]);
+                }
+                while (!roundOver)
+                {
+                    yield return new WaitForSeconds(1);
                 }
             }
             if (gameOver)
@@ -67,29 +87,26 @@ public class GameController : MonoBehaviour
                 restart = true;
                 break;
             }
-            if (Input.GetKeyDown(KeyCode.Escape))
-            {
-                break;
-            }
         }
     }
 
-    public void AddScore(string playerName, int newScoreValue)
+    public void AddScore(string playerName, int addScoreValue)
     {
         if (playerName == "Player1")
         {
-            score1 += newScoreValue;
+            score1 += addScoreValue;
         }
         if (playerName == "Player2")
         {
-            score2 += newScoreValue;
+            score2 += addScoreValue;
         }
         UpdateScore();
     }
 
     void UpdateScore()
     {
-        //scoreText1.text = " Player1 Score: " + score;
+        scoreText1.text = "" + score1;
+        scoreText2.text = "" + score2;
     }
 
     public void GameOver()
@@ -97,8 +114,15 @@ public class GameController : MonoBehaviour
         gameOverText.text = "Game Over!";
         gameOver = true;
     }
+
     public void RoundOver()
     {
         roundOver = true;
     }
+
+    public bool GetRoundOver()
+    {
+        return roundOver;
+    }
+
 }
