@@ -6,27 +6,25 @@ using UnityEngine.UI;
 
 public class GameController : MonoBehaviour
 {
-
-    public GameObject[] levels;
     public GameObject[] players;
-    public GameObject[] playerSpawns;
-    public GameObject[] destroyObjects;
-    public Vector3 levelSpawnValues;
+    public GameObject[] levelPrefabs;
     public int levelCount;
     public float levelSpawnWait;
     public float startWait;
-    public float waveWait;
     public int maxRounds = 1;
     public Text scoreText1;
     public Text scoreText2;
     public Text restartText;
     public Text gameOverText;
+    public Text player1InformText;
+    public Text player2InformText;
 
     private bool gameOver;
     private bool restart;
     private bool roundOver;
     private int score1;
     private int score2;
+    private Level currentLevelScript;
 
     private void Start()
     {
@@ -35,13 +33,26 @@ public class GameController : MonoBehaviour
         //restartText.text = "";
         //gameOverText.text = "";
         score1 = 0;
-        score2 = 0; 
+        score2 = 0;
         UpdateScore();
+
+        for (int i = 0; i < levelPrefabs.Length; i++)
+        {
+            
+        }
+
+        
+
         StartCoroutine(SpawnLevels());
     }
 
     private void Update()
     {
+        if (Input.GetButtonDown("Cancel"))
+        {
+            Application.Quit();
+        }
+
         if (restart)
         {
             if (Input.GetKeyDown(KeyCode.R))
@@ -61,26 +72,29 @@ public class GameController : MonoBehaviour
             {
                 roundOver = false;
 
-                GameObject level = levels[Random.Range(0, levels.Length)];
+                GameObject currentLevel = levelPrefabs[Random.Range(0, levelPrefabs.Length)];
                 Quaternion spawnRotation = Quaternion.identity;
-                Instantiate(level, levelSpawnValues, spawnRotation);
-                //for (int i = 0; i< players.Length; i++)
-                //{
-                //    GameObject player = players[i];
-                //    GameObject playerSpawn = playerSpawns[i];
-                //    Vector3 playerSpawnValue = playerSpawn.transform.position;
-                //    Instantiate(player, playerSpawnValue, spawnRotation);
-                //}
-                yield return new WaitForSeconds(3);
-                for(int i =0; i < destroyObjects.Length; i++)
+
+                currentLevelScript = currentLevel.GetComponent<Level>();
+
+                Instantiate(currentLevel, currentLevelScript.GetLevelSpawn(), spawnRotation);
+
+                for (int i = 1; i < players.Length; i++)
                 {
-                    Destroy(destroyObjects[i]);
+                    GameObject player = players[i];
+                    Vector3 playerSpawnValue = currentLevelScript.GetPlayerSpawn(i);
+                    Instantiate(player, playerSpawnValue, spawnRotation);
                 }
+
+                StartCoroutine(StartLevel());
+                yield return new WaitForSeconds(3);
+                
                 while (!roundOver)
                 {
                     yield return new WaitForSeconds(1);
                 }
             }
+
             if (gameOver)
             {
                 restartText.text = "Press 'R' for Restart";
@@ -88,6 +102,26 @@ public class GameController : MonoBehaviour
                 break;
             }
         }
+    }
+
+    IEnumerator StartLevel()
+    {
+        //Countdown
+        player1InformText.text = "Ready?";
+        player2InformText.text = "Ready?";
+        yield return new WaitForSeconds(1.5f);
+        player1InformText.text = "Set!";
+        player2InformText.text = "Set!";
+        yield return new WaitForSeconds(1.5f);
+
+        //Start Blocks Destroy
+        for (int i = 1; i < 3; i++)
+        {
+            Destroy(currentLevelScript.GetDropBlock(i));
+        }
+
+        player1InformText.text = "GO!";
+        player2InformText.text = "GO!";
     }
 
     public void AddScore(string playerName, int addScoreValue)
@@ -125,4 +159,16 @@ public class GameController : MonoBehaviour
         return roundOver;
     }
 
+    public Vector2 GetPlayerSpawn(string tag)
+    {
+        if (tag == "Player1")
+        {
+            return currentLevelScript.GetPlayerSpawn(1);
+        }
+        if (tag == "Player2")
+        {
+            return currentLevelScript.GetPlayerSpawn(2);
+        }
+        else return new Vector2 (0,0);
+    }
 }

@@ -7,9 +7,9 @@ TagManager:
   - Player1
   - Player2
   - Platform
-  - PlayerController
   - Camera1
   - Camera2
+  - Hazard
   layers:
   - Default
   - TransparentFX
