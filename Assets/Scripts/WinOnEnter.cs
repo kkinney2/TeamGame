@@ -19,15 +19,26 @@ public class WinOnEnter : MonoBehaviour {
         }
     }
 
-    private void OnTriggerEnter(Collider other)
+    private void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.CompareTag("Player1") && !gameController.GetRoundOver())
+        if (other.CompareTag("Player1") && (gameController.GetRoundOver() == false))
         {
             gameController.AddScore("Player1", 1);
         }
-        if (other.CompareTag("Player2") && !gameController.GetRoundOver())
+        if (other.CompareTag("Player2") && (gameController.GetRoundOver() == false))
         {
             gameController.AddScore("Player2", 1);
         }
+
+        StartCoroutine(RoundOver());
+    }
+    IEnumerator RoundOver()
+    {
+        gameController.player1InformText.text = "Round Over!";
+        gameController.player2InformText.text = "Round Over!";
+        yield return new WaitForSeconds(3);
+        gameController.player1InformText.text = "";
+        gameController.player2InformText.text = "";
+        gameController.RoundOver();
     }
 }

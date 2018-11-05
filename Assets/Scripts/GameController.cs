@@ -19,8 +19,9 @@ public class GameController : MonoBehaviour
 
     private bool gameOver;
     private bool restart;
-    private bool roundOver;
+    private bool isRoundOver;
     private bool isLevelLoaded;
+    private bool hasLevelStarted;
     private int score1;
     private int score2;
     private Level currentLevelScript;
@@ -38,11 +39,27 @@ public class GameController : MonoBehaviour
         score1 = 0;
         score2 = 0;
         UpdateScore();
+        isRoundOver = false;
+        isLevelLoaded = false;
+        hasLevelStarted = false;
+
+        currentLevel = levelPrefabs[0];
+        
+        if (currentLevel != null)
+        {
+            currentLevelScript = currentLevel.GetComponent<Level>();
+        }
+        if (currentLevel == null)
+        {
+            Debug.Log("Cannot find 'CurrentLevel' script");
+        }
+        
+        currentLevel = levelPrefabs[0];
+        Quaternion spawnRotation = Quaternion.identity;
+        Instantiate(currentLevel, currentLevelScript.GetLevelSpawn(), spawnRotation);
         isLevelLoaded = true;
 
-        StartCoroutine(LevelInfo());
-        StartCoroutine(ShuffleLevels());
-        StartCoroutine(SpawnLevels());
+        StartCoroutine(ShuffleLevels(levelPrefabs));
     }
 
     private void Update()
@@ -50,6 +67,12 @@ public class GameController : MonoBehaviour
         if (Input.GetButtonDown("Cancel"))
         {
             Application.Quit();
+        }
+
+        if (gameOver)
+        {
+            restartText.text = "Press 'R' for Restart";
+            restart = true;
         }
 
         if (restart)
@@ -62,74 +85,60 @@ public class GameController : MonoBehaviour
         }
     }
 
-    IEnumerator SpawnLevels()
+    private void FixedUpdate()
     {
-        yield return new WaitForSeconds(startWait);
-        while (true)
+        //Level Sequencing
+        if (!gameOver)
         {
-            for (int rounds = 0; rounds < maxRounds; rounds++)
+            if (!hasLevelStarted)
             {
-                roundOver = false;
-                if (!isLevelLoaded)
-                {
-                    currentLevel = levelPrefabs[Random.Range(0, levelPrefabs.Length)];
-                    StartCoroutine(LevelInfo());
-                    Quaternion spawnRotation = Quaternion.identity;
-                    Instantiate(currentLevel, currentLevelScript.GetLevelSpawn(), spawnRotation);
-                }
-
-                yield return new WaitForSeconds(0.5f);
-
-                for (int i = 0; i < players.Length; i++)
-                {
-                    GameObject player = players[i];
-                    Debug.Log("Player: " + player);
-                    Vector2 playerSpawnValue = currentLevelScript.GetPlayerSpawn(i+1);
-                    player.transform.position = playerSpawnValue;
-                    Debug.Log("PlayerSpawnValue:" + playerSpawnValue);
-                } 
-
+                hasLevelStarted = true;
                 StartCoroutine(StartLevel());
 
-                yield return new WaitForSeconds(3);
-                
-                while (!roundOver)
+                //Start Blocks 'Destroy'
+                for (int i = 1; i < 3; i++)
                 {
-                    yield return new WaitForSeconds(1);
+                    GameObject dropBlock = currentLevelScript.GetDropBlock(i);
+                    Destroy(dropBlock, 3);
+                    Debug.Log("Dropblock Destroy");
                 }
             }
-
-            if (gameOver)
+            if (isRoundOver)
             {
-                restartText.text = "Press 'R' for Restart";
-                restart = true;
-                break;
+                Destroy(currentLevel);
+                isLevelLoaded = false;
+                StartCoroutine(SpawnLevel());
+                StartCoroutine(SpawnPlayers());
+                isRoundOver = false;
             }
         }
     }
 
-    IEnumerator LevelInfo()
+    IEnumerator SpawnLevel()
     {
-        currentLevelScript = currentLevel.GetComponent<Level>();
-        GameObject[] children = currentLevel.GetComponentsInChildren<GameObject>();
-        foreach (GameObject child in children)
+        if (!isLevelLoaded)
         {
-            if (child.name == "DropBlock1")
-            {
-                currentLevelScript.SetDropBlock(1, child);
-            }
-            if (child.name == "DropBlock2")
-            {
-                currentLevelScript.SetDropBlock(2, child);
-            }
-            if (child.name == "Player1_Spawn")
-            {
-                currentLevelScript.SetPlayerSpawn(1, child.transform.position);
-            }
-            if (child.name == "Player2_Spawn")
-            {
-                currentLevelScript.SetPlayerSpawn(2, child.transform.position);
-            }
+            currentLevel = levels[Random.Range(0, levelPrefabs.Length)];
+            Quaternion spawnRotation = Quaternion.identity;
+            Instantiate(currentLevel, currentLevelScript.GetLevelSpawn(), spawnRotation);
+            isLevelLoaded = true;
+        }
+        if (isLevelLoaded)
+        {
+            Debug.Log("A level is already loaded");
+        }
+        yield return new WaitForSeconds(1);
+    }
+
+    IEnumerator SpawnPlayers()
+    {
+        for (int i = 0; i < players.Length; i++)
+        {
+            GameObject player = players[i];
+            Debug.Log("Player: " + player);
+            Vector2 playerSpawnValue = currentLevelScript.GetPlayerSpawn(i + 1);
+            player.transform.position = playerSpawnValue;
+            Debug.Log("PlayerSpawnValue:" + playerSpawnValue);
         }
         yield return new WaitForSeconds(1);
     }
@@ -144,20 +153,18 @@ public class GameController : MonoBehaviour
         player2InformText.text = "Set!";
         yield return new WaitForSeconds(1.5f);
 
-        //Start Blocks Destroy
-        for (int i = 1; i < 3; i++)
-        {
-            Destroy(currentLevelScript.GetDropBlock(i));
-        }
-
         player1InformText.text = "GO!";
         player2InformText.text = "GO!";
+        yield return new WaitForSeconds(1.5f);
+
+        player1InformText.text = "";
+        player2InformText.text = "";
     }
 
     private GameObject[] LevelsShuffle(GameObject[] array)
     {
         //Durstenfeld Shuffle
-        for (var i = array.Length - 1; i > 0; i--)
+        for (int i = array.Length - 1; i > 0; i--)
         {
             int j = (int)Mathf.Floor(Random.value * (i + 1));
             GameObject temp = array[i];
@@ -166,8 +173,13 @@ public class GameController : MonoBehaviour
         }
         return array;
     }
-    IEnumerator ShuffleLevels()
+
+    IEnumerator ShuffleLevels(GameObject[] levels)
     {
+        if(levels.Length == 0)
+        {
+            levels = levelPrefabs;
+        }
         LevelsShuffle(levels);
         yield return new WaitForSeconds(1);
     }
@@ -199,12 +211,12 @@ public class GameController : MonoBehaviour
 
     public void RoundOver()
     {
-        roundOver = true;
+        isRoundOver = true;
     }
 
     public bool GetRoundOver()
     {
-        return roundOver;
+        return isRoundOver;
     }
 
     public Vector2 GetPlayerSpawn(string tag)

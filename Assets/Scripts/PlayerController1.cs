@@ -40,7 +40,6 @@ public class PlayerController1 : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.W) && !isJumping)
         {
             Jump();
-            isJumping = true;
         }
     }
 
@@ -54,6 +53,7 @@ public class PlayerController1 : MonoBehaviour
     void Jump()
     {
         rb2D.AddForce(new Vector2(0.0f, jumpForce));
+        isJumping = true;
     }
 
     public void Respawn()

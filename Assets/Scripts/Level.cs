@@ -5,16 +5,41 @@ using UnityEngine;
 
 public class Level : MonoBehaviour
 {
-    private Vector2 player1Spawn;
-    private Vector2 player2Spawn;
-    private Vector3 spawnDropValue1;
-    private Vector3 spawnDropValue2;
+    
+    public Vector3 player1Spawn;
+    public Vector3 player2Spawn;
+    public Vector3 spawnDropValue1;
+    public Vector3 spawnDropValue2;
+
     private Vector3 levelSpawnValue = new Vector3 (0,0,0);
     //private string levelName;
     private string attribute;
     private GameObject dropBlock1;
     private GameObject dropBlock2;
     private GameObject dropBlockNull;
+
+    private void Update()
+    {
+        GameObject dropBlockObject = GameObject.Find("/"+ this.name + "/DropBlock1");
+        if (dropBlockObject != null)
+        {
+            dropBlock1 = dropBlockObject;
+        }
+        if (dropBlock1 == null)
+        {
+            Debug.Log("Cannot find 'DropBlock1' : " + ("/" + this.name + "/DropBlock2"));
+        }
+
+        dropBlockObject = GameObject.Find("/" + this.name + "/DropBlock2");
+        if (dropBlockObject != null)
+        {
+            dropBlock2 = dropBlockObject;
+        }
+        if (dropBlock2 == null)
+        {
+            Debug.Log("Cannot find 'DropBlock2' : " + ("/" + this.name + "/DropBlock2"));
+        }
+    }
 
     //public string GetName()
     //{
