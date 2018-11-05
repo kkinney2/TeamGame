@@ -74,7 +74,7 @@ public class PlayerController1 : MonoBehaviour
         }
         else
         {
-            Debug.Log("Collision Not found");
+            //Debug.Log("Collision Not found");
         }
     }
 }

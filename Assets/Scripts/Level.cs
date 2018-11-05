@@ -10,40 +10,16 @@ public class Level : MonoBehaviour
     private Vector3 spawnDropValue1;
     private Vector3 spawnDropValue2;
     private Vector3 levelSpawnValue = new Vector3 (0,0,0);
-    private string levelName;
+    //private string levelName;
     private string attribute;
     private GameObject dropBlock1;
     private GameObject dropBlock2;
     private GameObject dropBlockNull;
 
-    public void Start()
-    {
-        var children = this.GetComponentsInChildren<GameObject>();
-        foreach (var child in children)
-        {
-            if (child.name == "DropBlock1")
-            {
-                dropBlock1 = child;
-            }
-            if (child.name == "DropBlock2")
-            {
-                dropBlock2 = child;
-            }
-            if (child.name == "Player1_Spawn")
-            {
-                player1Spawn = child.transform.position;
-            }
-            if (child.name == "Player2_Spawn")
-            {
-                player2Spawn = child.transform.position;
-            }
-        }
-    }
-
-    public string GetName()
-    {
-        return levelName;
-    }
+    //public string GetName()
+    //{
+    //    return levelName;
+    //}
 
     public void SetAttribute(string newAttribute)
     {
@@ -60,6 +36,14 @@ public class Level : MonoBehaviour
         return levelSpawnValue;
     }
 
+    public void SetDropBlock(int num, GameObject dropTemp)
+    {
+        if (num == 1)
+            dropBlock1 = dropTemp;
+        if (num == 2)
+            dropBlock2 = dropTemp;
+    }
+
     public GameObject GetDropBlock(int num)
     {
         if (num == 1)
@@ -67,15 +51,23 @@ public class Level : MonoBehaviour
         if (num == 2)
             return dropBlock2;
         else
-            return dropBlockNull;
+            return new GameObject();
     }
 
-    public Vector3 GetPlayerSpawn(int num)
+    public void SetPlayerSpawn(int num, Vector2 spawnTemp)
+    {
+        if (num == 1)
+            player1Spawn = spawnTemp;
+        if (num == 2)
+            player2Spawn = spawnTemp;
+    }
+
+    public Vector2 GetPlayerSpawn(int num)
     {
         if (num == 1)
             return player1Spawn;
         if (num == 2)
             return player2Spawn;
-        else return new Vector3(0, 0, 0);
+        else return new Vector3();
     }
 }

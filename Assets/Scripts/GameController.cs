@@ -8,8 +8,6 @@ public class GameController : MonoBehaviour
 {
     public GameObject[] players;
     public GameObject[] levelPrefabs;
-    public int levelCount;
-    public float levelSpawnWait;
     public float startWait;
     public int maxRounds = 1;
     public Text scoreText1;
@@ -22,9 +20,12 @@ public class GameController : MonoBehaviour
     private bool gameOver;
     private bool restart;
     private bool roundOver;
+    private bool isLevelLoaded;
     private int score1;
     private int score2;
     private Level currentLevelScript;
+    private GameObject currentLevel;
+    private GameObject[] levels;
 
     private void Start()
     {
@@ -32,17 +33,15 @@ public class GameController : MonoBehaviour
         restart = false;
         //restartText.text = "";
         //gameOverText.text = "";
+        player1InformText.text = "";
+        player2InformText.text = "";
         score1 = 0;
         score2 = 0;
         UpdateScore();
+        isLevelLoaded = true;
 
-        for (int i = 0; i < levelPrefabs.Length; i++)
-        {
-            
-        }
-
-        
-
+        StartCoroutine(LevelInfo());
+        StartCoroutine(ShuffleLevels());
         StartCoroutine(SpawnLevels());
     }
 
@@ -58,7 +57,7 @@ public class GameController : MonoBehaviour
             if (Input.GetKeyDown(KeyCode.R))
             {
                 //Application.LoadLevel (Application.loadedLevel);
-                SceneManager.LoadScene("TumbleTemple", LoadSceneMode.Single);
+                SceneManager.LoadScene("TumbleTemple2D", LoadSceneMode.Single);
             }
         }
     }
@@ -71,22 +70,27 @@ public class GameController : MonoBehaviour
             for (int rounds = 0; rounds < maxRounds; rounds++)
             {
                 roundOver = false;
-
-                GameObject currentLevel = levelPrefabs[Random.Range(0, levelPrefabs.Length)];
-                Quaternion spawnRotation = Quaternion.identity;
-
-                currentLevelScript = currentLevel.GetComponent<Level>();
-
-                Instantiate(currentLevel, currentLevelScript.GetLevelSpawn(), spawnRotation);
-
-                for (int i = 1; i < players.Length; i++)
+                if (!isLevelLoaded)
                 {
-                    GameObject player = players[i];
-                    Vector3 playerSpawnValue = currentLevelScript.GetPlayerSpawn(i);
-                    Instantiate(player, playerSpawnValue, spawnRotation);
+                    currentLevel = levelPrefabs[Random.Range(0, levelPrefabs.Length)];
+                    StartCoroutine(LevelInfo());
+                    Quaternion spawnRotation = Quaternion.identity;
+                    Instantiate(currentLevel, currentLevelScript.GetLevelSpawn(), spawnRotation);
                 }
 
+                yield return new WaitForSeconds(0.5f);
+
+                for (int i = 0; i < players.Length; i++)
+                {
+                    GameObject player = players[i];
+                    Debug.Log("Player: " + player);
+                    Vector2 playerSpawnValue = currentLevelScript.GetPlayerSpawn(i+1);
+                    player.transform.position = playerSpawnValue;
+                    Debug.Log("PlayerSpawnValue:" + playerSpawnValue);
+                } 
+
                 StartCoroutine(StartLevel());
+
                 yield return new WaitForSeconds(3);
                 
                 while (!roundOver)
@@ -102,6 +106,32 @@ public class GameController : MonoBehaviour
                 break;
             }
         }
+    }
+
+    IEnumerator LevelInfo()
+    {
+        currentLevelScript = currentLevel.GetComponent<Level>();
+        GameObject[] children = currentLevel.GetComponentsInChildren<GameObject>();
+        foreach (GameObject child in children)
+        {
+            if (child.name == "DropBlock1")
+            {
+                currentLevelScript.SetDropBlock(1, child);
+            }
+            if (child.name == "DropBlock2")
+            {
+                currentLevelScript.SetDropBlock(2, child);
+            }
+            if (child.name == "Player1_Spawn")
+            {
+                currentLevelScript.SetPlayerSpawn(1, child.transform.position);
+            }
+            if (child.name == "Player2_Spawn")
+            {
+                currentLevelScript.SetPlayerSpawn(2, child.transform.position);
+            }
+        }
+        yield return new WaitForSeconds(1);
     }
 
     IEnumerator StartLevel()
@@ -122,6 +152,24 @@ public class GameController : MonoBehaviour
 
         player1InformText.text = "GO!";
         player2InformText.text = "GO!";
+    }
+
+    private GameObject[] LevelsShuffle(GameObject[] array)
+    {
+        //Durstenfeld Shuffle
+        for (var i = array.Length - 1; i > 0; i--)
+        {
+            int j = (int)Mathf.Floor(Random.value * (i + 1));
+            GameObject temp = array[i];
+            array[i] = array[j];
+            array[j] = temp;
+        }
+        return array;
+    }
+    IEnumerator ShuffleLevels()
+    {
+        LevelsShuffle(levels);
+        yield return new WaitForSeconds(1);
     }
 
     public void AddScore(string playerName, int addScoreValue)
