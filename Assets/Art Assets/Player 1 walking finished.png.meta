@@ -1,7 +1,11 @@
 fileFormatVersion: 2
 guid: 6d86a816c605ed7408851750ca8a53e0
 TextureImporter:
-  fileIDToRecycleName: {}
+  fileIDToRecycleName:
+    21300000: Player 1 walking finished_0
+    21300002: Player 1 walking finished_1
+    21300004: Player 1 walking finished_2
+    21300006: Player 1 walking finished_3
   externalObjects: {}
   serializedVersion: 7
   mipmaps:
@@ -115,11 +119,91 @@ TextureImporter:
     androidETC2FallbackOverride: 0
   spriteSheet:
     serializedVersion: 2
-    sprites: []
+    sprites:
+    - serializedVersion: 2
+      name: Player 1 walking finished_0
+      rect:
+        serializedVersion: 2
+        x: 36
+        y: 144
+        width: 52
+        height: 92
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d61eea6022d7b1d4b8162e1046002238
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Player 1 walking finished_1
+      rect:
+        serializedVersion: 2
+        x: 164
+        y: 144
+        width: 52
+        height: 92
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: afe8d3675a51c7b4eb8eaa3aec24a67c
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Player 1 walking finished_2
+      rect:
+        serializedVersion: 2
+        x: 36
+        y: 16
+        width: 52
+        height: 92
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e04992899bb9c0448b933121fdd57139
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Player 1 walking finished_3
+      rect:
+        serializedVersion: 2
+        x: 164
+        y: 16
+        width: 52
+        height: 92
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0b90b2304810c5b49b7405e4f392717c
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     outline: []
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: d9465f824a44dbc4891eb3904c31b335
     vertices: []
     indices: 
     edges: []

@@ -8,13 +8,13 @@ public class PlayerController2 : MonoBehaviour
     public float jumpForce;
     public GameController gameController;
 
-    private Rigidbody2D rb;
-    private bool isJumping;
+    private Rigidbody2D rb2D;
+    private bool isJumping = false;
     private Transform player2Spawn;
 
     private void Start()
     {
-        rb = this.GetComponent<Rigidbody2D>();
+        rb2D = this.GetComponent<Rigidbody2D>();
         StartCoroutine(SpawnWait());
     }
 
@@ -29,45 +29,52 @@ public class PlayerController2 : MonoBehaviour
         {
             Application.Quit();
         }
+
     }
     void FixedUpdate()
     {
-        //Start Player2 Movement
         float moveHorizontal = Input.GetAxis("Horizontal_P2");
-        Vector3 movement = new Vector3(moveHorizontal, 0.0f, 0.0f);
-
-        rb.velocity = movement * speed;
+        Move(moveHorizontal);
 
         //Jumping Mechanic
         if (Input.GetKeyDown(KeyCode.UpArrow) && !isJumping)
         {
-            rb.AddForce(new Vector2(0.0f, jumpForce));
-            SetIsJumping(true);
+            Jump();
         }
-        //End Player2 Movement
-
     }
 
-    public void SetIsJumping(bool isJumpingTemp)
+    void Move(float moveHorizontal)
     {
-        isJumping = isJumpingTemp;
+        Vector2 movement = new Vector2(moveHorizontal, 0.0f);
+
+        rb2D.velocity = movement * speed;
+    }
+
+    void Jump()
+    {
+        rb2D.AddForce(new Vector2(0.0f, jumpForce));
+        isJumping = true;
     }
 
     public void Respawn()
     {
         transform.position = gameController.GetPlayerSpawn(tag);
-        rb.velocity = Vector3.zero;
+        rb2D.velocity = Vector3.zero;
 
     }
-    private void OnCollisionEnter(Collision other)
+    private void OnCollisionEnter2D(Collision2D other)
     {
         if (other.gameObject.CompareTag("Platform"))
         {
-            SetIsJumping(false);
+            isJumping = false;
         }
         if (other.gameObject.CompareTag("Hazard"))
         {
             Respawn();
+        }
+        else
+        {
+            //Debug.Log("Collision Not found");
         }
     }
 }
