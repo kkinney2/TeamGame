@@ -13,6 +13,7 @@ TagManager:
   - PlayerController
   - Level
   - Key
+  - LockedDoor
   layers:
   - Default
   - TransparentFX

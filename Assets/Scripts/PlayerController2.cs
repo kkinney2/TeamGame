@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+//Mechanics based from 'Brackeys' 2D Character Controller
 public class PlayerController2 : MonoBehaviour
 {
     public float speed;
@@ -11,6 +12,7 @@ public class PlayerController2 : MonoBehaviour
     private Rigidbody2D rb2D;
     private bool isJumping = false;
     private Transform player2Spawn;
+    private bool isFacingRight;
 
     private Vector3 m_Velocity = Vector3.zero;
     [Range(0, .3f)] [SerializeField] private float m_MovementSmoothing = .05f;
@@ -52,10 +54,17 @@ public class PlayerController2 : MonoBehaviour
 
     void Move(float move)
     {
-        // Move the character by finding the target velocity
         Vector3 targetVelocity = new Vector2(move * 10f, rb2D.velocity.y);
-        // And then smoothing it out and applying it to the character
         rb2D.velocity = Vector3.SmoothDamp(rb2D.velocity, targetVelocity, ref m_Velocity, m_MovementSmoothing);
+
+        if (move > 0 && !isFacingRight)
+        {
+            Flip();
+        }
+        else if (move < 0 && isFacingRight)
+        {
+            Flip();
+        }
     }
 
     void Jump()
@@ -70,6 +79,16 @@ public class PlayerController2 : MonoBehaviour
         rb2D.velocity = Vector3.zero;
 
     }
+
+    private void Flip()
+    {
+        isFacingRight = !isFacingRight;
+
+        Vector3 theScale = transform.localScale;
+        theScale.x *= -1;
+        transform.localScale = theScale;
+    }
+
     private void OnCollisionEnter2D(Collision2D other)
     {
         if (other.gameObject.CompareTag("Platform"))
