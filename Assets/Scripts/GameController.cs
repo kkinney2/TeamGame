@@ -22,6 +22,7 @@ public class GameController : MonoBehaviour
     private bool isRoundOver;
     private bool isLevelLoaded;
     private bool hasLevelStarted;
+    private bool allowMovement;
     private int score1;
     private int score2;
     private Level currentLevelScript;
@@ -42,6 +43,7 @@ public class GameController : MonoBehaviour
         isRoundOver = false;
         isLevelLoaded = false;
         hasLevelStarted = false;
+        allowMovement = false;
 
         currentLevel = levelPrefabs[0];
         
@@ -94,17 +96,10 @@ public class GameController : MonoBehaviour
             {
                 hasLevelStarted = true;
                 StartCoroutine(StartLevel());
-
-                //Start Blocks 'Destroy'
-                for (int i = 1; i < 3; i++)
-                {
-                    GameObject dropBlock = currentLevelScript.GetDropBlock(i);
-                    Destroy(dropBlock, 3);
-                    Debug.Log("Dropblock Destroy");
-                }
             }
             if (isRoundOver)
             {
+                allowMovement = false;
                 Destroy(currentLevel);
                 isLevelLoaded = false;
                 StartCoroutine(SpawnLevel());
@@ -155,6 +150,7 @@ public class GameController : MonoBehaviour
 
         player1InformText.text = "GO!";
         player2InformText.text = "GO!";
+        allowMovement = true;
         yield return new WaitForSeconds(1.5f);
 
         player1InformText.text = "";
@@ -230,5 +226,10 @@ public class GameController : MonoBehaviour
             return currentLevelScript.GetPlayerSpawn(2);
         }
         else return new Vector2 (0,0);
+    }
+
+    public bool HasMovement()
+    {
+        return allowMovement;
     }
 }

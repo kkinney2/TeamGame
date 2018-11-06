@@ -31,15 +31,19 @@ public class PlayerController1 : MonoBehaviour
         }
 
     }
+
     void FixedUpdate()
     {
-        float moveHorizontal = Input.GetAxis("Horizontal_P1");
-        Move(moveHorizontal);
-
-        //Jumping Mechanic
-        if (Input.GetKeyDown(KeyCode.W) && !isJumping)
+        if (gameController.HasMovement())
         {
-            Jump();
+            float moveHorizontal = Input.GetAxis("Horizontal_P1");
+            Move(moveHorizontal);
+
+            //Jumping Mechanic
+            if (Input.GetKeyDown(KeyCode.W) && !isJumping)
+            {
+                Jump();
+            }
         }
     }
 
