@@ -12,6 +12,7 @@ TagManager:
   - Hazard
   - PlayerController
   - Level
+  - Key
   layers:
   - Default
   - TransparentFX
