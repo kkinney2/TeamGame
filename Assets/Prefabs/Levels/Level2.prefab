@@ -2973,10 +2973,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3f575bcb256702849811d885c402c88a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  player1Spawn: {x: -1.5, y: 13, z: 0}
-  player2Spawn: {x: 1.5, y: 13, z: 0}
-  spawnDropValue1: {x: -1.476, y: 12.343, z: 0}
-  spawnDropValue2: {x: 1.476, y: 12.343, z: 0}
+  player1Spawn: {x: -1.5, y: 13.2, z: 0}
+  player2Spawn: {x: 1.5, y: 13.2, z: 0}
 --- !u!212 &212022523949196678
 SpriteRenderer:
   m_ObjectHideFlags: 1

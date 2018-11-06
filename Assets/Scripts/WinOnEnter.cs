@@ -5,9 +5,12 @@ using UnityEngine;
 public class WinOnEnter : MonoBehaviour {
 
     private GameController gameController;
+    private bool hasEnded;
 
     private void Start()
     {
+        hasEnded = false;
+
         GameObject gameControllerObject = GameObject.FindWithTag("GameController");
         if (gameControllerObject != null)
         {
@@ -21,16 +24,20 @@ public class WinOnEnter : MonoBehaviour {
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.CompareTag("Player1") && (gameController.GetRoundOver() == false))
+        if (other.CompareTag("Player1") && (gameController.GetRoundOver() == false) && !hasEnded)
         {
-            gameController.AddScore("Player1", 1);
+            gameController.AddScore(other.tag, 1);
         }
-        if (other.CompareTag("Player2") && (gameController.GetRoundOver() == false))
+        if (other.CompareTag("Player2") && (gameController.GetRoundOver() == false) && !hasEnded)
         {
-            gameController.AddScore("Player2", 1);
+            gameController.AddScore(other.tag, 1);
+        }
+        if (hasEnded == false)
+        {
+            StartCoroutine(RoundOver());
         }
 
-        StartCoroutine(RoundOver());
+        hasEnded = true;
     }
     IEnumerator RoundOver()
     {

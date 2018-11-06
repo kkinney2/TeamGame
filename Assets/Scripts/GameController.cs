@@ -8,12 +8,11 @@ public class GameController : MonoBehaviour
 {
     public GameObject[] players;
     public GameObject[] levelPrefabs;
-    public float startWait;
     public int maxRounds = 1;
+    public Text scoreTitleText1;
+    public Text scoreTitleText2;
     public Text scoreText1;
     public Text scoreText2;
-    public Text restartText;
-    public Text gameOverText;
     public Text player1InformText;
     public Text player2InformText;
 
@@ -33,10 +32,10 @@ public class GameController : MonoBehaviour
     {
         gameOver = false;
         restart = false;
-        //restartText.text = "";
-        //gameOverText.text = "";
         player1InformText.text = "";
         player2InformText.text = "";
+        scoreTitleText1.text = "Player 1 Score:";
+        scoreTitleText2.text = "Player 2 Score:";
         score1 = 0;
         score2 = 0;
         UpdateScore();
@@ -45,23 +44,10 @@ public class GameController : MonoBehaviour
         hasLevelStarted = false;
         allowMovement = false;
 
-        currentLevel = levelPrefabs[0];
-        
-        if (currentLevel != null)
-        {
-            currentLevelScript = currentLevel.GetComponent<Level>();
-        }
-        if (currentLevel == null)
-        {
-            Debug.Log("Cannot find 'CurrentLevel' script");
-        }
-        
-        currentLevel = levelPrefabs[0];
-        Quaternion spawnRotation = Quaternion.identity;
-        Instantiate(currentLevel, currentLevelScript.GetLevelSpawn(), spawnRotation);
-        isLevelLoaded = true;
+        levels = levelPrefabs;
+        LevelsShuffle(levels);
 
-        StartCoroutine(ShuffleLevels(levelPrefabs));
+        SpawnLevel();
     }
 
     private void Update()
@@ -69,12 +55,6 @@ public class GameController : MonoBehaviour
         if (Input.GetButtonDown("Cancel"))
         {
             Application.Quit();
-        }
-
-        if (gameOver)
-        {
-            restartText.text = "Press 'R' for Restart";
-            restart = true;
         }
 
         if (restart)
@@ -85,14 +65,15 @@ public class GameController : MonoBehaviour
                 SceneManager.LoadScene("TumbleTemple2D", LoadSceneMode.Single);
             }
         }
-    }
 
-    private void FixedUpdate()
-    {
         //Level Sequencing
         if (!gameOver)
         {
-            if (!hasLevelStarted)
+            if ((score1 + score2) >= maxRounds)
+            {
+                GameOver();
+            }
+            if (!hasLevelStarted && score1 + score2 <= maxRounds)
             {
                 hasLevelStarted = true;
                 StartCoroutine(StartLevel());
@@ -100,42 +81,68 @@ public class GameController : MonoBehaviour
             if (isRoundOver)
             {
                 allowMovement = false;
-                Destroy(currentLevel);
                 isLevelLoaded = false;
-                StartCoroutine(SpawnLevel());
-                StartCoroutine(SpawnPlayers());
                 isRoundOver = false;
+                hasLevelStarted = false;
+                if(currentLevelScript != null)
+                {
+                    currentLevelScript.DestroyLevel();
+                }
+                if (currentLevelScript == null)
+                {
+                    FindCurrentLevelScript();
+                    currentLevelScript.DestroyLevel();
+                }
+                currentLevel = null;
+                if (!gameOver)
+                {
+                    SpawnLevel();
+                    SpawnPlayers();
+                }
             }
         }
     }
 
-    IEnumerator SpawnLevel()
+    private void SpawnLevel()
     {
-        if (!isLevelLoaded)
-        {
-            currentLevel = levels[Random.Range(0, levelPrefabs.Length)];
-            Quaternion spawnRotation = Quaternion.identity;
-            Instantiate(currentLevel, currentLevelScript.GetLevelSpawn(), spawnRotation);
-            isLevelLoaded = true;
-        }
-        if (isLevelLoaded)
+        if (isLevelLoaded == true)
         {
             Debug.Log("A level is already loaded");
         }
-        yield return new WaitForSeconds(1);
+        if (isLevelLoaded == false)
+        {
+            isLevelLoaded = true;
+            currentLevel = levels[Random.Range(0, levels.Length-1)];
+            Quaternion spawnRotation = Quaternion.identity;
+            Instantiate(currentLevel, new Vector3 (0,0,0), spawnRotation);
+            Debug.Log("Level Loaded: " + currentLevel);
+            FindCurrentLevelScript();
+        }
     }
 
-    IEnumerator SpawnPlayers()
+    private void FindCurrentLevelScript()
+    {
+        GameObject currentLevelTemp = GameObject.FindWithTag("Level");
+        if (currentLevelTemp != null)
+        {
+            currentLevelScript = currentLevelTemp.GetComponent<Level>();
+        }
+        if (currentLevelTemp == null)
+        {
+            Debug.Log("Cannot find 'CurrentLevel' script");
+        }
+    }
+
+    private void SpawnPlayers()
     {
         for (int i = 0; i < players.Length; i++)
         {
             GameObject player = players[i];
-            Debug.Log("Player: " + player);
+            //Debug.Log("Player: " + player);
             Vector2 playerSpawnValue = currentLevelScript.GetPlayerSpawn(i + 1);
             player.transform.position = playerSpawnValue;
-            Debug.Log("PlayerSpawnValue:" + playerSpawnValue);
+            //Debug.Log("PlayerSpawnValue:" + playerSpawnValue);
         }
-        yield return new WaitForSeconds(1);
     }
 
     IEnumerator StartLevel()
@@ -170,16 +177,6 @@ public class GameController : MonoBehaviour
         return array;
     }
 
-    IEnumerator ShuffleLevels(GameObject[] levels)
-    {
-        if(levels.Length == 0)
-        {
-            levels = levelPrefabs;
-        }
-        LevelsShuffle(levels);
-        yield return new WaitForSeconds(1);
-    }
-
     public void AddScore(string playerName, int addScoreValue)
     {
         if (playerName == "Player1")
@@ -201,7 +198,18 @@ public class GameController : MonoBehaviour
 
     public void GameOver()
     {
-        gameOverText.text = "Game Over!";
+        scoreTitleText1.text = "Game Over!";
+        scoreTitleText2.text = "";
+        if (score1 > score2)
+        {
+            scoreText1.text = "Player 1 Wins!";
+        }
+        if (score1 < score2)
+        {
+            scoreText1.text = "Player 2 Wins!";
+        }
+        scoreText2.text = "Press 'R' for Restart";
+        restart = true;
         gameOver = true;
     }
 
