@@ -221,7 +221,7 @@ Rigidbody2D:
   m_Mass: 1
   m_LinearDrag: 0
   m_AngularDrag: 0.05
-  m_GravityScale: 12
+  m_GravityScale: 15
   m_Material: {fileID: 0}
   m_Interpolate: 1
   m_SleepingMode: 1
@@ -239,7 +239,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   speed: 5
-  jumpForce: 900
+  jumpForce: 2500
   gameController: {fileID: 1336992294}
 --- !u!61 &65049647
 BoxCollider2D:
@@ -1008,7 +1008,7 @@ Rigidbody2D:
   m_Mass: 1
   m_LinearDrag: 0
   m_AngularDrag: 0.05
-  m_GravityScale: 12
+  m_GravityScale: 15
   m_Material: {fileID: 0}
   m_Interpolate: 1
   m_SleepingMode: 1
@@ -1025,51 +1025,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 574d01112ada2f243a823cbf83c4f557, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 5
-  jumpForce: 900
+  speed: 40
+  jumpForce: 1200
   gameController: {fileID: 1336992294}
---- !u!1001 &996681759
-Prefab:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    m_TransformParent: {fileID: 0}
-    m_Modifications:
-    - target: {fileID: 4325089097508498, guid: 30c26c34ff1ab884a82a9771c4a1987e, type: 2}
-      propertyPath: m_LocalPosition.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4325089097508498, guid: 30c26c34ff1ab884a82a9771c4a1987e, type: 2}
-      propertyPath: m_LocalPosition.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4325089097508498, guid: 30c26c34ff1ab884a82a9771c4a1987e, type: 2}
-      propertyPath: m_LocalPosition.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4325089097508498, guid: 30c26c34ff1ab884a82a9771c4a1987e, type: 2}
-      propertyPath: m_LocalRotation.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4325089097508498, guid: 30c26c34ff1ab884a82a9771c4a1987e, type: 2}
-      propertyPath: m_LocalRotation.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4325089097508498, guid: 30c26c34ff1ab884a82a9771c4a1987e, type: 2}
-      propertyPath: m_LocalRotation.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4325089097508498, guid: 30c26c34ff1ab884a82a9771c4a1987e, type: 2}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 4325089097508498, guid: 30c26c34ff1ab884a82a9771c4a1987e, type: 2}
-      propertyPath: m_RootOrder
-      value: 8
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: 30c26c34ff1ab884a82a9771c4a1987e, type: 2}
-  m_IsPrefabAsset: 0
+  m_MovementSmoothing: 0.05
 --- !u!1 &1076499463
 GameObject:
   m_ObjectHideFlags: 0
